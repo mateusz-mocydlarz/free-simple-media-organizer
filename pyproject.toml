@@ -11,6 +11,9 @@ packages = [{include = "free_simple_media_organizer"}]
 python = "^3.11"
 sqlalchemy = "^2.0.19"
 alembic = "^1.11.2"
+python-magic-bin = "^0.4.14"
+python-magic = "^0.4.27"
+filetype = "^1.2.0"
 
 
 [build-system]
