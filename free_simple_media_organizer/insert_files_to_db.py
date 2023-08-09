@@ -2,68 +2,89 @@
 import os
 from time import time
 from functions.getmimetype import get_mimetype
-from model.db_models import table_mimetypes, table_directories_paths, engine
-from sqlalchemy import insert, select
+from model.db_core_model import table_mimes, table_paths, table_files
+from sqlalchemy import insert, select, create_engine
 
 start = time()
 
 # path_to_walk = r"\\Mocny-nas\HDD_MEDIA\2023\2023-06-29 Zagłębocze"
 # path_to_walk = r"\\Mocny-nas\HDD_MEDIA" 2395
-path_to_walk = r"E:"
+# path_to_walk = r"E:"
+# path_to_walk = r"/Volumes/HDD_MEDIA/2023/2023-06-29 Zagłębocze"
+path_to_walk = r"/Volumes/HDD_MEDIA/2023"
+db_file = r"/Volumes/HDD_DATA/010_Mateusz/programming/tmp_data/free-simple-media-organizer/mac_testowa.db"
 
-files_paths = dict()
-mimetypes_list = list()
-files_list = list()
+engine = create_engine(f"sqlite:///{db_file}", echo=True)
 
+# pobranie istniejących ścieżek i mime z bazy
+with engine.connect() as conn:
+    exists_paths = list()
+    id_path = dict()
+    for row in conn.execute(select(table_paths.c["id"], table_paths.c["path"])):
+        exists_paths.append(row[1])
+        id_path[row[1]] = row[0]
 
+    exists_mime = list()
+    id_mime = dict()
+    for row in conn.execute(select(table_mimes.c["id"], table_mimes.c["mime"])):
+        exists_mime.append(row[1])
+        id_mime[row[1]] = row[0]
+
+list_all_files = list()
+list_mime_to_insert = list()
+list_paths_to_insert = list()
+
+# zebranie wszystkich plików i ścieżek
 for root, dirs, files in os.walk(path_to_walk):
-    if len(files) > 0:
-        files_paths[root] = files
+    for file in files:
+        path_to_file = os.path.join(root, file)
+        mime = get_mimetype(path_to_file)
+        file_info = {
+            "name": file,
+            "size": os.stat(path_to_file).st_size,
+            "mime": mime,
+            "path": root
+        }
+        if mime.split("/")[0] in ["image", "video"]:
+            list_all_files.append(file_info)
 
-for path_to_file in files_paths.keys():
-    for filename in files_paths[path_to_file]:
-        full_path_to_file = os.path.join(path_to_file, filename)
-        file_size = os.stat(full_path_to_file).st_size
-        mimetype = get_mimetype(full_path_to_file)
+            # jeśli ścieżka nie istnieje w bazie, to przygotować do insertu
+            if root not in exists_paths and {"path": root} not in list_paths_to_insert:
+                list_paths_to_insert.append({"path": root})
 
-        if mimetype not in mimetypes_list:
-            mimetypes_list.append(mimetype)
+            # jeśli mime nie istnieje w bazie, to przygotować do insertu
+            if mime not in exists_mime and {"mime": mime} not in list_mime_to_insert:
+                list_mime_to_insert.append({"mime": mime})
 
+
+# insert tylko jeśli trzeba i dopisanie nowych do bazy
+if len(list_paths_to_insert) > 0 or len(list_mime_to_insert) > 0:
+    with engine.connect() as conn:
+        if len(list_paths_to_insert) > 0:
+            result = conn.execute(insert(table_paths).returning(
+                table_paths.c["id"], table_paths.c["path"]), list_paths_to_insert
+            )
+            for row in result:
+                id_path[row[1]] = row[0]
+            conn.commit()
+
+        if len(list_mime_to_insert) > 0:
+            result = conn.execute(insert(table_mimes).returning(
+                table_mimes.c["id"], table_mimes.c["mime"]), list_mime_to_insert
+            )
+            for row in result:
+                id_mime[row[1]] = row[0]
+            conn.commit()
+
+for i, f in enumerate(list_all_files):
+    list_all_files[i]["path_id"] = id_path[f["path"]]
+    list_all_files[i]["mime_id"] = id_mime[f["mime"]]
+    del list_all_files[i]["path"]
+    del list_all_files[i]["mime"]
 
 with engine.connect() as conn:
-    exists_directories_paths = list()
-    exists_mimetypes = list()
+    if len(list_all_files) > 0:
+        result = conn.execute(insert(table_files), list_all_files)
+        conn.commit()
 
-    for row in conn.execute(select(table_directories_paths.c["path"])):
-        exists_directories_paths.append(row[0])
-
-    for row in conn.execute(select(table_mimetypes.c["mimetype"])):
-        exists_mimetypes.append(row[0])
-
-    insert_table_directories_paths = list()
-    for path_to_file in files_paths.keys():
-        if path_to_file not in exists_directories_paths and len(files_paths[path_to_file]) > 0:
-            insert_table_directories_paths.append({"path": path_to_file})
-
-    insert_table_mimetypes = list()
-    for mimetype in mimetypes_list:
-        if mimetype not in exists_mimetypes:
-            insert_table_mimetypes.append({"mimetype": mimetype})
-
-    if len(insert_table_directories_paths) > 0:
-        result = conn.execute(insert(table_directories_paths), insert_table_directories_paths)
-
-    if len(insert_table_mimetypes) > 0:
-        result = conn.execute(insert(table_mimetypes), insert_table_mimetypes)
-
-    conn.commit()
-
-end = time()
-duration = end - start
-print(duration)
-# print(files_paths)
-
-# if __name__ == "__main__":
-#     # test_path = r"/Volumes/HDD_MEDIA/2023"
-#     # test_path = r"/Volumes/HDD_MEDIA/2023/2023-06-29 Zagłębocze"
-#     test_path = r"\\Mocny-nas\HDD_MEDIA\2023\2023-06-29 Zagłębocze"
+print(time() - start)

@@ -1,11 +1,8 @@
-from sqlalchemy import (create_engine, MetaData, Table, Column, Integer, String, ForeignKey, insert,
+from sqlalchemy import (MetaData, Table, Column, Integer, String, ForeignKey,
                         UniqueConstraint, DateTime)
 from datetime import datetime
 import socket
 
-tmp_path = r"\\Mocny-nas\hdd_data\010_Mateusz\programming\tmp_data\free-simple-media-organizer\test.db"
-
-engine = create_engine(f"sqlite:///{tmp_path}", echo=True)
 metadata_obj = MetaData()
 
 # informacje o bazie danych
@@ -19,8 +16,8 @@ table_db_informations = Table(
 )
 
 # ścieżki do katalogów z plikami
-table_directories_paths = Table(
-    "directories_paths",
+table_paths = Table(
+    "paths",
     metadata_obj,
     Column("id", Integer, primary_key=True),
     Column("path", String(300), nullable=False, unique=True),
@@ -34,11 +31,11 @@ table_directories_paths = Table(
 )
 
 # słownik z typami plików
-table_mimetypes = Table(
-    "miemetypes",
+table_mimes = Table(
+    "mimes",
     metadata_obj,
     Column("id", Integer, primary_key=True),
-    Column("mimetype", String(30), nullable=False),
+    Column("mime", String(30), nullable=False),
 
     # techniczne kolumny
     Column("db_creation_date", DateTime, nullable=False, default=datetime.now()),
@@ -53,10 +50,11 @@ table_files = Table(
     "files",
     metadata_obj,
     Column("id", Integer, primary_key=True),
-    Column("directorie_path_id", ForeignKey("directories_paths.id"), nullable=False),
-    Column("mimetype_id", ForeignKey("miemetypes.id"), nullable=False),
-    Column("filename", String(300), nullable=False),
-    Column("filesize", Integer, nullable=False),
+    Column("name", String(300), nullable=False),
+    Column("size", Integer, nullable=False),
+    Column("path_id", ForeignKey("paths.id"), nullable=False),
+    Column("mime_id", ForeignKey("mimes.id"), nullable=False),
+    UniqueConstraint("name", "path_id", name="uix_f"),
 
     # techniczne kolumny
     Column("db_creation_date", DateTime, nullable=False, default=datetime.now()),
@@ -85,6 +83,10 @@ table_files_metadata = Table(
 )
 
 if __name__ == "__main__":
+    from sqlalchemy import create_engine, insert
+    db_file = r"/Volumes/HDD_DATA/010_Mateusz/programming/tmp_data/free-simple-media-organizer/mac_testowa.db"
+
+    engine = create_engine(f"sqlite:///{db_file}", echo=True)
     metadata_obj.drop_all(engine)
     metadata_obj.create_all(engine)
 
