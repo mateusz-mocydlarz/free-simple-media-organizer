@@ -10,8 +10,8 @@ start = time()
 # path_to_walk = r"\\Mocny-nas\HDD_MEDIA\2023\2023-06-29 Zagłębocze"
 # path_to_walk = r"\\Mocny-nas\HDD_MEDIA" 2395
 # path_to_walk = r"E:"
-# path_to_walk = r"/Volumes/HDD_MEDIA/2023/2023-06-29 Zagłębocze"
-path_to_walk = r"/Volumes/HDD_MEDIA/2023"
+path_to_walk = r"/Volumes/HDD_MEDIA/2023/2023-06-29 Zagłębocze"
+# path_to_walk = r"/Volumes/HDD_MEDIA/2023"
 db_file = r"/Volumes/HDD_DATA/010_Mateusz/programming/tmp_data/free-simple-media-organizer/mac_testowa.db"
 
 engine = create_engine(f"sqlite:///{db_file}", echo=True)
@@ -29,6 +29,16 @@ with engine.connect() as conn:
     for row in conn.execute(select(table_mimes.c["id"], table_mimes.c["mime"])):
         exists_mime.append(row[1])
         id_mime[row[1]] = row[0]
+    
+    for row in conn.execute(select(
+                table_files.c["id"],
+                table_files.c["name"],
+                table_files.c["size"],
+                table_files.c["path_id"],
+                table_files.c["mime_id"]
+                # table_paths.c["path"]
+            ).join(table_paths).where(table_paths.c["path"].like(f"{ path_to_walk }%"))):
+        pass
 
 list_all_files = list()
 list_mime_to_insert = list()
@@ -76,6 +86,7 @@ if len(list_paths_to_insert) > 0 or len(list_mime_to_insert) > 0:
                 id_mime[row[1]] = row[0]
             conn.commit()
 
+# przygotowanie danych o plikach do insertu
 for i, f in enumerate(list_all_files):
     list_all_files[i]["path_id"] = id_path[f["path"]]
     list_all_files[i]["mime_id"] = id_mime[f["mime"]]
