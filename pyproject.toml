@@ -9,8 +9,6 @@ packages = [{include = "free_simple_media_organizer"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-sqlalchemy = "^2.0.19"
-alembic = "^1.11.2"
 python-magic-bin = { version = "^0.4.14", platform = "win32" }
 python-magic = "^0.4.27"
 filetype = "^1.2.0"
