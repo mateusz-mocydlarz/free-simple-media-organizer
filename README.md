@@ -1,7 +1,7 @@
 # free-simple-media-organizer
-Darmowy prosty ogranizer plików multimedialnych napisany w Python
+Free simple media files organizer written in Python
 
-### Wersjonowanie:
+### Versioning:
 01.000.000.00 - aa.fff.ddd.hh  
 aa - app version  
 fff - additional functions  
