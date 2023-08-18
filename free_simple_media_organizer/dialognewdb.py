@@ -59,9 +59,12 @@ class DialogNewDb(tk.Tk):
         with open(os.path.join(os.path.dirname(__file__), "database", "init.sql")) as script_file:
             script = script_file.read()
 
-        with sqlite3.connect(os.path.join(self.dlg_ent_path.get(), "database.db")) as con:
-            cur = con.cursor()
-            cur.executescript(script)
+        con = sqlite3.connect(os.path.join(self.dlg_ent_path.get(), "database.db"), isolation_level=)
+        cur = con.cursor()
+        cur.executescript(script)
+        con.close()
+
+        print("end")
 
 
 if __name__ == "__main__":

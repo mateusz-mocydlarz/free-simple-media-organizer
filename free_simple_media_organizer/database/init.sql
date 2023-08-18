@@ -22,4 +22,19 @@ CREATE TABLE files (
     path_id         INTEGER NOT NULL,
     FOREIGN KEY (mime_id) REFERENCES mimes (id),
     FOREIGN KEY (path_id) REFERENCES paths (id)
-)
+);
+
+INSERT INTO db_information VALUES (
+    "app_version",
+    "01.000.000.00"
+);
+
+INSERT INTO db_information VALUES (
+    "datetime_localtime",
+    datetime('now','localtime')
+);
+
+INSERT INTO db_information VALUES (
+    "datetime",
+    datetime('now')
+);
