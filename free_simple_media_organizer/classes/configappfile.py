@@ -1,33 +1,46 @@
 # -*- coding: utf-8 -*-
 import json
 import platformdirs
-from os.path import join, exists
+from os.path import join, exists, dirname
+from os import makedirs
 
 
 class ConfigAppFile (object):
     """The configuration for the app in json"""
 
-    config_file_path = join(platformdirs.user_config_path("FreeSimpleMediaOrganizer"), "configuration.json")
+    app_config_file_path = join(platformdirs.user_config_path("FreeSimpleMediaOrganizer"), "configuration.json")
 
-    def __init__(self) -> None:
+    def __init__(self):
 
-        if exists(self.config_file_path):
-            self.config_app = json.load(self.config_file_path)
+        self.app_config = dict()
+        self.app_config["test"] = "testowa wartość"
+
+        if exists(self.app_config_file_path):
+            with open(self.app_config_file_path, "r", encoding="utf8") as config_file:
+                self.app_config.update(json.load(config_file))
         else:
-            self.create_config_file()
+            makedirs(dirname(self.app_config_file_path), exist_ok=True)
+            with open(self.app_config_file_path, "w", encoding="utf8") as config_file:
+                json.dump(self.app_config, config_file, indent=4, ensure_ascii=False)
 
-    def create_config_file(self):
-        config = dict()
-        config["app_vesriob"] = "01.000.000.00"
+    def load(self) -> dict:
+        """Return configuration as dict
 
-        self.config_app = json.loads(config)
+        Returns:
+            dict: configuration
+        """
+        return self.app_config
 
-        # json.dump(config, self.config_file_path)
-        self.__init__()
+    def save(self, config_data: dict) -> None:
+        """Save configuration to file data
 
-        # print(self.config_file_path)
-        # config_app = json.load(self.config_file_path)
+        Args:
+            config_data (dict): configuration
+        """
+        with open(self.app_config_file_path, "w") as config_file:
+            json.dump(config_data, config_file, indent=4)
 
 
 if __name__ == "__main__":
     test = ConfigAppFile()
+    print(test.load())

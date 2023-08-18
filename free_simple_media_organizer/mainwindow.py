@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 import tkinter as tk
 from tkinter import ttk, filedialog
+import gettext
 
+_ = gettext.gettext
 
 class MainWindow(tk.Tk):
 
@@ -12,29 +14,18 @@ class MainWindow(tk.Tk):
         self.menu_bar = tk.Menu(self)
 
         self.menu_db = tk.Menu(self.menu_bar, tearoff=0)
-        self.menu_db.add_command(label="New...", command=self.dialog_new_db)
-        self.menu_db.add_command(label="Open...")
-        self.menu_db.add_command(label="Close database")
-        self.menu_db.entryconfig("Close database", state="disabled")
-        self.menu_bar.add_cascade(label="Database", menu=self.menu_db)
+        self.menu_bar.add_cascade(label=_("Database"), menu=self.menu_db)
+        self.menu_db.add_command(label=_("New..."), command=self.dialog_new_db)
+        self.menu_db.add_command(label=_("Open..."))
+        self.menu_db.add_command(label=_("Close database"))
+        self.menu_db.entryconfig(_("Close database"), state="disabled")
 
         self.menu_media = tk.Menu(self.menu_bar, tearoff=0)
-        self.menu_media.add_command(label="Sources...")
-        self.menu_bar.add_cascade(label="Media", menu=self.menu_media)
+        self.menu_bar.add_cascade(label=_("Media"), menu=self.menu_media)
+        self.menu_media.add_command(label=_("Sources..."))
 
-        # self.filemenu = tk.Menu(self.menubar, tearoff=0)
-        # self.filemenu.add
-        # self.filemenu.add_command(label="New", command=self.quit)
-        # self.filemenu.add_command(label="Open", command=self.quit)
-        # self.filemenu.add_command(label="Save", command=self.quit)
-        # self.filemenu.add_separator()
-        # self.filemenu.add_command(label="Exit", command=self.quit)
-        # self.menubar.add_cascade(label="File", menu=self.filemenu)
-
-        # self.helpmenu = tk.Menu(self.menubar, tearoff=0)
-        # self.helpmenu.add_command(label="Help Index", command=self.quit)
-        # self.helpmenu.add_command(label="About...", command=lambda: self.donothing_test("about"))
-        # self.menubar.add_cascade(label="Help", menu=self.helpmenu)
+        self.menu_settings = tk.Menu(self.menu_bar, tearoff=0)
+        self.menu_bar.add_cascade(label=_("Settings"), menu=self.menu_settings)
 
         self.config(menu=self.menu_bar)
 
