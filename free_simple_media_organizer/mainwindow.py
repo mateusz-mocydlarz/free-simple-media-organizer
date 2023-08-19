@@ -2,14 +2,16 @@
 import tkinter as tk
 from tkinter import ttk, filedialog
 import gettext
+import dialognewdb
 
 _ = gettext.gettext
+
 
 class MainWindow(tk.Tk):
 
     def __init__(self):
         super().__init__()
-        self.title("Free simple media organizer")
+        self.title("Free media library")
 
         self.menu_bar = tk.Menu(self)
 
@@ -30,8 +32,11 @@ class MainWindow(tk.Tk):
         self.config(menu=self.menu_bar)
 
     def dialog_new_db(self):
-        new_db = filedialog.askdirectory()
-        print(new_db)
+        dialog_new_db = dialognewdb.DialogNewDb(self)
+        # dialog_new_db.update_idletasks()
+        # dialog_new_db.wm_attributes('-topmost', 'true')
+        dialog_new_db.grab_set()
+        # dialog_new_db.mainloop()
 
 
 if __name__ == "__main__":

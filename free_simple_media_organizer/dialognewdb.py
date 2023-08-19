@@ -4,16 +4,20 @@ from tkinter import ttk
 from tkinter import filedialog
 import gettext
 import sqlite3
-import os.path
+# import os.path
+from functions.check_path_new_database import check_path_new_database
+import pathlib
+from socket import gethostname
+from getpass import getuser
 
 _ = gettext.gettext
 
 
-class DialogNewDb(tk.Tk):
+class DialogNewDb(tk.Toplevel):
     """Dialog to create new database"""
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent: tk.Tk):
+        super().__init__(parent)
         self.title(_("Create new media database"))
         # self.resizable(width=False, height=False)
 
@@ -42,6 +46,7 @@ class DialogNewDb(tk.Tk):
         self.dlg_frm_navi.pack(fill="both", padx=10, pady=10, expand=True)
 
         self.dlg_btn_next = ttk.Button(self.dlg_frm_navi, text=_("Next"), command=self.dialog_next)
+        self.dlg_btn_next.config(state=tk.DISABLED)
         self.dlg_btn_next.pack(side="right", anchor="se")
         self.dlg_btn_cancel = ttk.Button(self.dlg_frm_navi, text=_("Cancel"), command=self.destroy)
         self.dlg_btn_cancel.pack(side="right", anchor="se")
@@ -54,17 +59,31 @@ class DialogNewDb(tk.Tk):
         dialog = filedialog.askdirectory()
         self.dlg_ent_path.delete(0, tk.END)
         self.dlg_ent_path.insert(0, dialog)
+        check = check_path_new_database(self.dlg_ent_path.get())
+        if check != "OK":
+            self.dlg_lbl_warning.config(text=check)
+        else:
+            self.dlg_btn_next.config(state=tk.NORMAL)
 
     def dialog_next(self):
-        with open(os.path.join(os.path.dirname(__file__), "database", "init.sql")) as script_file:
+        # create dirs
+        dir_thumbnails = pathlib.Path(self.dlg_ent_path.get(), "thumbnails")
+        dir_thumbnails.mkdir(parents=True, exist_ok=True)
+        dir_faces = pathlib.Path(self.dlg_ent_path.get(), "faces")
+        dir_faces.mkdir(parents=True, exist_ok=True)
+
+        # create database
+        with open(pathlib.Path(pathlib.Path(__file__).parent, "database", "init.sql")) as script_file:
             script = script_file.read()
 
-        con = sqlite3.connect(os.path.join(self.dlg_ent_path.get(), "database.db"), isolation_level=)
+        con = sqlite3.connect(pathlib.Path(self.dlg_ent_path.get(), "database.db"))  # , isolation_level=)
         cur = con.cursor()
         cur.executescript(script)
+        cur.execute("INSERT INTO app_informations VALUES (?, ?)", ("created_db_by", f"{ gethostname() }/{ getuser() }"))
+        con.commit()
         con.close()
 
-        print("end")
+        self.destroy()
 
 
 if __name__ == "__main__":
