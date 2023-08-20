@@ -87,5 +87,6 @@ class DialogNewDb(tk.Toplevel):
 
 
 if __name__ == "__main__":
-    dialog_new_db = DialogNewDb()
-    dialog_new_db.mainloop()
+    parent = tk.Tk()
+    dialog_new_db = DialogNewDb(parent)
+    parent.mainloop()
