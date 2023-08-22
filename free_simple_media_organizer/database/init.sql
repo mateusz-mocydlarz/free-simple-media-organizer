@@ -3,6 +3,15 @@ CREATE TABLE app_informations (
     value               VARCHAR(50)
 );
 
+CREATE TABLE db_settings (
+    setting             VARCHAR(50),
+    value               VARCHAR(50),
+    created_by          VARCHAR(50) NOT NULL,
+    creation_date       DATETIME NOT NULL,
+    modified_by         VARCHAR(50) NOT NULL,
+    modification_date   DATETIME NOT NULL
+);
+
 CREATE TABLE paths (
     id                  INTEGER PRIMARY KEY AUTOINCREMENT,
     path                VARCHAR(400) NOT NULL,
@@ -41,6 +50,6 @@ INSERT INTO app_informations VALUES (
 );
 
 INSERT INTO app_informations VALUES (
-    "creation_db_date",
+    "db_creation_date",
     datetime('now','localtime')
 );

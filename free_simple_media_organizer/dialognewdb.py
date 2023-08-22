@@ -4,11 +4,10 @@ from tkinter import ttk
 from tkinter import filedialog
 import gettext
 import sqlite3
-# import os.path
 from functions.check_path_new_database import check_path_new_database
+from functions.get_hostname_user import get_hostname_user
 import pathlib
-from socket import gethostname
-from getpass import getuser
+import dialogdbsettings
 
 _ = gettext.gettext
 
@@ -18,6 +17,7 @@ class DialogNewDb(tk.Toplevel):
 
     def __init__(self, parent: tk.Tk):
         super().__init__(parent)
+        self.parent = parent
         self.title(_("Create new media database"))
         # self.resizable(width=False, height=False)
 
@@ -52,7 +52,6 @@ class DialogNewDb(tk.Toplevel):
         self.dlg_btn_cancel.pack(side="right", anchor="se")
 
         self.update()
-
         self.minsize(width=self.winfo_width(), height=self.winfo_height())
 
     def dialog_path_to_db(self):
@@ -71,17 +70,21 @@ class DialogNewDb(tk.Toplevel):
         dir_thumbnails.mkdir(parents=True, exist_ok=True)
         dir_faces = pathlib.Path(self.dlg_ent_path.get(), "faces")
         dir_faces.mkdir(parents=True, exist_ok=True)
+        path_to_db = pathlib.Path(self.dlg_ent_path.get(), "database.db")
 
         # create database
         with open(pathlib.Path(pathlib.Path(__file__).parent, "database", "init.sql")) as script_file:
             script = script_file.read()
 
-        con = sqlite3.connect(pathlib.Path(self.dlg_ent_path.get(), "database.db"))  # , isolation_level=)
+        con = sqlite3.connect(path_to_db)  # , isolation_level=)
         cur = con.cursor()
         cur.executescript(script)
-        cur.execute("INSERT INTO app_informations VALUES (?, ?)", ("created_db_by", f"{ gethostname() }/{ getuser() }"))
+        cur.execute("INSERT INTO app_informations VALUES (?, ?)", ("db_created_by", get_hostname_user()))
         con.commit()
         con.close()
+
+        dialog_db_settings = dialogdbsettings.DialogDbSettings(self.parent, path_to_db)
+        dialog_db_settings.grab_set_global()
 
         self.destroy()
 

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import tkinter as tk
-from tkinter import ttk, filedialog
 import gettext
 import dialognewdb
+import dialogdbsettings
 
 _ = gettext.gettext
 
@@ -20,7 +20,10 @@ class MainWindow(tk.Tk):
         self.menu_db.add_command(label=_("New..."), command=self.dialog_new_db)
         self.menu_db.add_command(label=_("Open..."))
         self.menu_db.add_command(label=_("Close database"))
+        self.menu_db.add_separator()
+        self.menu_db.add_command(label=_("Settings..."), command=self.dialog_db_settings)
         self.menu_db.entryconfig(_("Close database"), state=tk.DISABLED)
+        self.menu_db.entryconfig(_("Settings..."), state=tk.DISABLED)
 
         self.menu_media = tk.Menu(self.menu_bar, tearoff=0)
         self.menu_bar.add_cascade(label=_("Media"), menu=self.menu_media)
@@ -31,11 +34,19 @@ class MainWindow(tk.Tk):
 
         self.config(menu=self.menu_bar)
 
-    def dialog_new_db(self):
+    def open_dialog(self):
         self.menu_bar.entryconfig(_("Database"), state=tk.DISABLED)
         self.menu_bar.entryconfig(_("Media"), state=tk.DISABLED)
         self.menu_bar.entryconfig(_("Settings"), state=tk.DISABLED)
+
+    def dialog_new_db(self):
+        self.open_dialog()
         dialog_new_db = dialognewdb.DialogNewDb(self)
+        dialog_new_db.grab_set_global()
+
+    def dialog_db_settings(self):
+        self.open_dialog()
+        dialog_new_db = dialogdbsettings.DialogDbSettings(self)
         dialog_new_db.grab_set_global()
 
 
