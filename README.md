@@ -2,9 +2,9 @@
 Free simple media files organizer written in Python
 
 ### Versioning:
-01.000.000.00  
+01.001.001.00  
 aa.ddd.fff.hh  
-aa - app version  
-ddd - database version  
-fff - functionality version  
+aa - app  
+ddd - database  
+fff - functionality  
 hh - hotfix

@@ -6,6 +6,8 @@ from create_new_db import createNewDb
 class mainWindow(tk.Tk):
     """App main window"""
 
+    APP_VERSION = "v01.001.001.00"
+
     def __init__(self):
         super().__init__()
         self.title("Free simple media organizer")

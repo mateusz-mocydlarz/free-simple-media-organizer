@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "free-simple-media-organizer"
-version = "1.000.000.00"
+version = "1.001.001.00"
 description = "Darmowy prosty ogranizer plików multimedialnych napisany w Python"
 authors = ["Mateusz Mocydlarz <mateusz.mocydlarz@bitmm.eu>"]
 license = "MIT"
@@ -8,7 +8,7 @@ readme = "README.md"
 packages = [{include = "free_simple_media_organizer"}]
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.12"
 
 [build-system]
 requires = ["poetry-core"]
