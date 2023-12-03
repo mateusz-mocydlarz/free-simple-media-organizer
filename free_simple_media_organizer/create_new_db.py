@@ -1,0 +1,95 @@
+import tkinter as tk
+from tkinter import filedialog
+from tkinter import ttk
+import os
+
+
+class createNewDb(tk.Toplevel):
+    """Create new database"""
+
+    def __init__(self, master: tk.Tk):
+        super().__init__(master)
+
+        frm_new_db = tk.Frame(self)
+        frm_label = tk.Frame(frm_new_db)
+        frm_path = tk.Frame(frm_new_db)
+        frm_warning = tk.Frame(frm_new_db)
+        frm_next = tk.Frame(frm_new_db)
+
+        lbl_new_db = ttk.Label(frm_label, text="Select empy directory, to create new db:")
+
+        self.entry_path_db = tk.StringVar()
+        self.entry_path_db.trace("w", self.check_path)
+        self.ent_path_db = ttk.Entry(frm_path, textvariable=self.entry_path_db)
+        btn_path_db = ttk.Button(frm_path, text="Select directory", command=self.select_dictionary)
+
+        self.lbl_warning = tk.Label(frm_warning, fg="red")
+
+        btn_cancel = ttk.Button(frm_next, text="Cancel", command=self.close_dialog)
+        self.btn_next = ttk.Button(frm_next, text="Next >", command=self.next_dialog, state="disabled")
+
+        frm_new_db.pack(fill="both", padx=10, pady=10, expand=True)
+
+        frm_label.pack(side="top", fill="x")
+        lbl_new_db.pack(side="left")
+
+        frm_path.pack(fill="both")
+        self.ent_path_db.pack(side="left", fill="x", expand=True)
+        btn_path_db.pack()
+
+        frm_warning.pack(fill="both")
+        self.lbl_warning.pack(side="left")
+
+        frm_next.pack(side="bottom", fill="both")
+        self.btn_next.pack(side="right", padx=2)
+        btn_cancel.pack(side="right", padx=2)
+
+        self.geometry("400x150")
+        self.resizable(False, False)
+
+    def close_dialog(self):
+        self.destroy()
+
+    def next_dialog(self):
+        os.makedirs(self.ent_path_db.get(), exist_ok=True)
+        db_directories = ["thumbnails",
+                          "faces",]
+        for d in db_directories:
+            os.makedirs(os.path.join(self.ent_path_db.get(), d), exist_ok=True)
+
+    def select_dictionary(self):
+        direcotry_path = filedialog.askdirectory()
+        self.ent_path_db.delete(0, tk.END)
+        self.ent_path_db.insert(0, direcotry_path)
+
+    def check_path(self, *args):
+        """Validate path to directory"""
+
+        if os.path.isabs(self.entry_path_db.get()):
+            if os.path.exists(self.entry_path_db.get()):
+                if os.path.isdir(self.entry_path_db.get()):
+                    if os.listdir(self.ent_path_db.get()):
+                        self.set_warning_information("Directory is not empty")
+                        self.btn_next.configure(state="disabled")
+                    else:
+                        self.set_warning_information("")
+                        self.btn_next.configure(state="active")
+                elif os.path.isfile(self.entry_path_db.get()):
+                    self.set_warning_information("This is a file")
+                    self.btn_next.configure(state="disabled")
+            else:
+                # print(os.path.splitdrive(self.entry_path_db.get()))
+                self.set_warning_information("The directory does not exist, it will be created")
+                self.btn_next.configure(state="active")
+        else:
+            self.set_warning_information("Path is not valid")
+            self.btn_next.configure(state="disabled")
+
+    def set_warning_information(self, information):
+        self.lbl_warning.configure(text=information)
+
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    dialog = createNewDb(root)
+    dialog.mainloop()
