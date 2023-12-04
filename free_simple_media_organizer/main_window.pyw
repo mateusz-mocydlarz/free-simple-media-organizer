@@ -1,12 +1,16 @@
 import tkinter as tk
 # from tkinter import ttk
 from create_new_db import createNewDb
+import os
+import socket
 
 
 class mainWindow(tk.Tk):
     """App main window"""
 
     APP_VERSION = "v01.001.001.00"
+    APP_START_POINT = os.path.dirname(__file__)
+    APP_USER = f"{socket.gethostname()}/{os.getlogin()}"
 
     def __init__(self):
         super().__init__()
@@ -16,12 +20,14 @@ class mainWindow(tk.Tk):
 
         self.menu_db = tk.Menu(self.menu_bar, tearoff=0)
         self.menu_db.add_command(label="New...", command=self.new_db)
-        self.menu_db.add_command(label="Open..")
+        self.menu_db.add_command(label="Open...")
 
         self.menu_open_last = tk.Menu(self.menu_db, tearoff=0)
         self.menu_db.add_cascade(label="Open last", menu=self.menu_open_last)
         self.menu_db.add_separator()
-        self.menu_db.add_command(label="Close", command=self.app_close)
+        self.menu_db.add_command(label="Settings..", state="disabled", command=self.db_settings)
+        self.menu_db.add_separator()
+        self.menu_db.add_command(label="Close", state="disabled", command=self.db_close)
 
         self.menu_settings = tk.Menu(self.menu_bar, tearoff=0)
         self.menu_settings.add_command(label="Aplication...", command=self.app_settings)
@@ -42,9 +48,32 @@ class mainWindow(tk.Tk):
     def new_db(self):
         dialog_create_new_db = createNewDb(self)
         dialog_create_new_db.grab_set()
+        dialog_create_new_db.wait_window()
 
-    def app_close(self):
-        self.destroy()
+        self.con = dialog_create_new_db.con
+        self.db_menu_control()
+
+    def db_settings(self):
+        print("db_settings")
+
+    def db_close(self):
+        self.con.close()
+        self.con = False
+        self.db_menu_control()
+
+    def db_menu_control(self):
+        if self.con:
+            self.menu_db.entryconfig("New...", state="disabled")
+            self.menu_db.entryconfig("Open...", state="disabled")
+            self.menu_db.entryconfig("Open last", state="disabled")
+            self.menu_db.entryconfig("Settings..", state="active")
+            self.menu_db.entryconfig("Close", state="active")
+        else:
+            self.menu_db.entryconfig("New...", state="active")
+            self.menu_db.entryconfig("Open...", state="active")
+            self.menu_db.entryconfig("Open last", state="active")
+            self.menu_db.entryconfig("Settings..", state="disabled")
+            self.menu_db.entryconfig("Close", state="disabled")
 
     def app_settings(self):
         print("Settings")
