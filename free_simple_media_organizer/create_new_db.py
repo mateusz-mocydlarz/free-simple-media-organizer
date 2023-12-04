@@ -33,7 +33,7 @@ class createNewDb(tk.Toplevel):
         self.lbl_warning = tk.Label(frm_warning, fg="red")
 
         btn_cancel = ttk.Button(frm_control, text="Cancel", command=self.destroy)
-        self.btn_create = ttk.Button(frm_control, text="Create", command=self.next_dialog, state="disabled")
+        self.btn_create = ttk.Button(frm_control, text="Create", command=self.create_db, state="disabled")
 
         frm_new_db.pack(fill="both", padx=10, pady=10, expand=True)
 
@@ -54,7 +54,7 @@ class createNewDb(tk.Toplevel):
         self.geometry("400x150")
         self.resizable(False, False)
 
-    def next_dialog(self):
+    def create_db(self):
         """Create a directories trees and db"""
         # create main directories
         os.makedirs(self.ent_path_db.get(), exist_ok=True)
