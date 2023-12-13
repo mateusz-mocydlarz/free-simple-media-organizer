@@ -1,16 +1,18 @@
 import tkinter as tk
-# from tkinter import ttk
-from create_new_db import createNewDb
-import os
+import pathlib
+import getpass
 import socket
+
+from create_new_db import createNewDb
 
 
 class mainWindow(tk.Tk):
     """App main window"""
 
     APP_VERSION = "v01.001.001.00"
-    APP_START_POINT = os.path.dirname(__file__)
-    APP_USER = f"{socket.gethostname()}/{os.getlogin()}"
+    # APP_START_POINT = os.path.dirname(__file__)
+    APP_START_POINT = pathlib.Path(__file__).parent
+    APP_USER = f"{socket.gethostname()}/{getpass.getuser()}"
 
     def __init__(self):
         super().__init__()
@@ -77,6 +79,7 @@ class mainWindow(tk.Tk):
 
     def app_settings(self):
         print("Settings")
+        print(self.APP_START_POINT)
 
 
 if __name__ == "__main__":

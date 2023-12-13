@@ -1,7 +1,8 @@
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import ttk
-import os
+import pathlib
+# import os
 import sqlite3
 
 
@@ -57,24 +58,30 @@ class createNewDb(tk.Toplevel):
     def create_db(self):
         """Create a directories trees and db"""
         # create main directories
-        os.makedirs(self.ent_path_db.get(), exist_ok=True)
+        db_main_path = pathlib.Path(self.ent_path_db.get())
+        db_main_path.mkdir(parents=True, exist_ok=True)
+        # os.makedirs(self.ent_path_db.get(), exist_ok=True)
 
         # create directories
         db_directories = ["thumbnails",
                           "faces",]
         for d in db_directories:
-            os.makedirs(os.path.join(self.ent_path_db.get(), d), exist_ok=True)
+            db_main_path.joinpath(d).mkdir(parents=True, exist_ok=True)
+            # os.makedirs(os.path.join(self.ent_path_db.get(), d), exist_ok=True)
 
         # create db
         db_version = self.master.APP_VERSION.split(".")[1]
-        con = sqlite3.connect(os.path.join(self.ent_path_db.get(), "db.db"))
+        con = sqlite3.connect(db_main_path.joinpath('db.db'))
+        # con = sqlite3.connect(os.path.join(self.ent_path_db.get(), "db.db"))
         con.execute("PRAGMA foreign_keys = ON")
         cur = con.cursor()
 
-        with open(os.path.normpath(os.path.join(self.master.APP_START_POINT,
-                                                "db/install",
-                                                f"{db_version}.sql")), "r") as script_new_db:
+        with open(pathlib.Path(self.master.APP_START_POINT).joinpath('db/install').joinpath(f'{db_version}.sql'), 'r') as script_new_db:
             cur.executescript(script_new_db.read())
+        # with open(os.path.normpath(os.path.join(self.master.APP_START_POINT,
+        #                                         "db/install",
+        #                                         f"{db_version}.sql")), "r") as script_new_db:
+        #     cur.executescript(script_new_db.read())
 
         init_data_informations = [
             ("db_version", db_version, self.master.APP_USER, self.master.APP_USER),
@@ -103,12 +110,14 @@ class createNewDb(tk.Toplevel):
         self.ent_path_db.insert(0, direcotry_path)
 
     def check_path(self, *args):
-        """Validate path to directory"""
+        """Validate path to directory and set variable"""
+        
+        self.db_main_path = pathlib.Path(self.entry_path_db.get())
 
-        if os.path.isabs(self.entry_path_db.get()):
-            if os.path.exists(self.entry_path_db.get()):
-                if os.path.isdir(self.entry_path_db.get()):
-                    if os.listdir(self.ent_path_db.get()):
+        if self.db_main_path.is_absolute():
+            if self.db_main_path.exists():
+                if self.db_main_path.is_dir():
+                    if self.db_main_path.iterdir:
                         self.set_warning_information("Directory is not empty")
                         self.btn_create.configure(state="disabled")
                     else:
@@ -125,14 +134,32 @@ class createNewDb(tk.Toplevel):
             self.set_warning_information("Path is not valid")
             self.btn_create.configure(state="disabled")
 
+        # if os.path.isabs(self.entry_path_db.get()):
+        #     if os.path.exists(self.entry_path_db.get()):
+        #         if os.path.isdir(self.entry_path_db.get()):
+        #             if os.listdir(self.ent_path_db.get()):
+        #                 self.set_warning_information("Directory is not empty")
+        #                 self.btn_create.configure(state="disabled")
+        #             else:
+        #                 self.set_warning_information("")
+        #                 self.btn_create.configure(state="active")
+        #         elif os.path.isfile(self.entry_path_db.get()):
+        #             self.set_warning_information("This is a file")
+        #             self.btn_create.configure(state="disabled")
+        #     else:
+        #         # print(os.path.splitdrive(self.entry_path_db.get()))
+        #         self.set_warning_information("The directory does not exist, it will be created")
+        #         self.btn_create.configure(state="active")
+        # else:
+        #     self.set_warning_information("Path is not valid")
+        #     self.btn_create.configure(state="disabled")
+
     def set_warning_information(self, information):
         self.lbl_warning.configure(text=information)
 
 
 if __name__ == "__main__":
-    root = tk.Tk()
-    root.APP_VERSION = "v01.001.001.00"
-    root.APP_START_POINT = os.path.dirname(__file__)
-    root.APP_USER = "host/user"
-    dialog = createNewDb(root)
-    dialog.mainloop()
+    from main_window import mainWindow
+    root = mainWindow()
+    root.new_db()
+    root.mainloop()
