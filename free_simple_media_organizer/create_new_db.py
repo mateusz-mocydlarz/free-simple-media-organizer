@@ -3,6 +3,8 @@ import tkinter as tk
 from tkinter import filedialog
 from tkinter import ttk
 import pathlib
+import hashlib
+import time
 
 from app_functions import connect_sqlite
 
@@ -77,17 +79,18 @@ class createNewDb(tk.Toplevel):
 
         init_data_informations = [
             ("db_version", db_version, self.master.APP_USER, self.master.APP_USER),
+            ("db_token", hashlib.md5(str(time.time()).encode()).hexdigest(), self.master.APP_USER, self.master.APP_USER),
         ]
 
         cur.executemany('''INSERT INTO db_informations (information, value, created_by, modified_by)
                         VALUES (?, ?, ?, ?)''', init_data_informations)
 
-        init_data_settings = [
-            ('max_thumbnail_resolution', '500.500', self.master.APP_USER, self.master.APP_USER),
-        ]
+        # init_data_settings = [
+        #     ('max_thumbnail_resolution', '500.500', self.master.APP_USER, self.master.APP_USER),
+        # ]
 
-        cur.executemany('''INSERT INTO db_settings (setting, value, created_by, modified_by)
-                        VALUES (?, ?, ?, ?)''', init_data_settings)
+        # cur.executemany('''INSERT INTO db_settings (setting, value, created_by, modified_by)
+        #                 VALUES (?, ?, ?, ?)''', init_data_settings)
         self.con.commit()
 
         self.destroy()
@@ -113,17 +116,15 @@ class createNewDb(tk.Toplevel):
                 if list(self.db_main_path.iterdir()):
                     self.set_warning_information("Directory is not empty")
                     btn_state = 'disabled'
-            else:
-                if self.db_main_path.is_file():
-                    self.set_warning_information("This is a file")
-                    btn_state = 'disabled'
-                else:
-                    self.set_warning_information("This is not a directory")
-                    btn_state = 'disabled'
+            elif self.db_main_path.is_file():
+                self.set_warning_information("This is a file")
+                btn_state = 'disabled'
+                # else:
+                #     self.set_warning_information("This is not a directory")
+                #     btn_state = 'disabled'
 
-        if not self.db_main_path.exists():
+        if not self.db_main_path.exists() and btn_state == 'active':
             self.set_warning_information("The directory does not exist, it will be created")
-            btn_state = 'active'
 
         self.btn_create.configure(state=btn_state)
 

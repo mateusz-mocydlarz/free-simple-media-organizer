@@ -102,12 +102,12 @@ class mainWindow(tk.Tk):
             self.menu_bar.entryconfig("Database", state='disabled')
             self.menu_bar.entryconfig("Settings", state='disabled')
             self.menu_bar.entryconfig("Help", state='disabled')
-            self.withdraw()
+            # self.withdraw()
         else:
             self.menu_bar.entryconfig("Database", state='active')
             self.menu_bar.entryconfig("Settings", state='active')
             self.menu_bar.entryconfig("Help", state='active')
-            self.deiconify()
+            # self.deiconify()
 
     def app_settings(self):
         print("Settings")

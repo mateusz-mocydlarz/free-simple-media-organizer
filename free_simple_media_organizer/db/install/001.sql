@@ -7,9 +7,9 @@ CREATE TABLE "db_informations" (
 	"information"	TEXT NOT NULL UNIQUE,
 	"value"	        TEXT NOT NULL,
 	"created_by"	TEXT,
-	"created"	    TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	"created"	    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	"modified_by"	TEXT,
-	"modified"	    TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	"modified"	    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY("information")
 );
 
@@ -17,9 +17,9 @@ CREATE TABLE "db_settings" (
 	"setting"	    TEXT NOT NULL UNIQUE,
 	"value"	        TEXT NOT NULL,
 	"created_by"	TEXT,
-	"created"	    TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	"created"	    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	"modified_by"	TEXT,
-	"modified"	    TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	"modified"	    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY("setting")
 );
 
@@ -27,9 +27,9 @@ CREATE TABLE "directories" (
 	"id"	        INTEGER NOT NULL UNIQUE,
 	"path"	        TEXT NOT NULL UNIQUE,
 	"created_by"	TEXT,
-	"created"	    TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	"created"	    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	"modified_by"	TEXT,
-	"modified"	    TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	"modified"	    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
 
@@ -40,9 +40,9 @@ CREATE TABLE "files" (
 	"name"              TEXT NOT NULL,
 	"size"              INT NOT NULL,
 	"created_by"	    TEXT,
-	"created"	        TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	"created"	        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	"modified_by"	    TEXT,
-	"modified"	        TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	"modified"	        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	FOREIGN KEY("directories_id") REFERENCES "directories"("id"),
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
