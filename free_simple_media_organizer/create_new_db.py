@@ -22,6 +22,8 @@ class createNewDb(tk.Toplevel):
         super().__init__(master)
 
         frm_new_db = tk.Frame(self)
+        frm_new_db.pack(fill="both", padx=10, pady=10, expand=True)
+
         frm_label = tk.Frame(frm_new_db)
         frm_path = tk.Frame(frm_new_db)
         frm_warning = tk.Frame(frm_new_db)
@@ -30,7 +32,7 @@ class createNewDb(tk.Toplevel):
         lbl_new_db = ttk.Label(frm_label, text="Select empy directory, to create new db:")
 
         self.entry_path_db = tk.StringVar()
-        self.entry_path_db.trace("w", self.check_path)
+        self.entry_path_db.trace('w', self.check_path)
         self.ent_path_db = ttk.Entry(frm_path, textvariable=self.entry_path_db)
         btn_path_db = ttk.Button(frm_path, text="Select directory", command=self.select_directory)
 
@@ -39,23 +41,21 @@ class createNewDb(tk.Toplevel):
         btn_cancel = ttk.Button(frm_control, text="Cancel", command=self.destroy)
         self.btn_create = ttk.Button(frm_control, text="Create", command=self.create_db, state="disabled")
 
-        frm_new_db.pack(fill="both", padx=10, pady=10, expand=True)
+        frm_label.pack(side='top', fill='x')
+        lbl_new_db.pack(side='left')
 
-        frm_label.pack(side="top", fill="x")
-        lbl_new_db.pack(side="left")
-
-        frm_path.pack(fill="both")
-        self.ent_path_db.pack(side="left", fill="x", expand=True)
+        frm_path.pack(fill='both')
+        self.ent_path_db.pack(side='left', fill='x', expand=True)
         btn_path_db.pack()
 
-        frm_warning.pack(fill="both")
-        self.lbl_warning.pack(side="left")
+        frm_warning.pack(fill='both')
+        self.lbl_warning.pack(side='left')
 
-        frm_control.pack(side="bottom", fill="both")
-        self.btn_create.pack(side="right", padx=2)
-        btn_cancel.pack(side="right", padx=2)
+        frm_control.pack(side='bottom', fill='both')
+        self.btn_create.pack(side='right', padx=2)
+        btn_cancel.pack(side='right', padx=2)
 
-        self.geometry("400x150")
+        self.geometry('400x150')
         self.resizable(False, False)
 
     def create_db(self):
@@ -64,8 +64,8 @@ class createNewDb(tk.Toplevel):
         self.db_main_path.mkdir(parents=True, exist_ok=True)
 
         # create directories
-        db_directories = ["thumbnails",
-                          "faces",]
+        db_directories = ['thumbnails',
+                          'faces',]
         for d in db_directories:
             self.db_main_path.joinpath(d).mkdir(parents=True, exist_ok=True)
 
@@ -78,8 +78,8 @@ class createNewDb(tk.Toplevel):
             cur.executescript(script_new_db.read())
 
         init_data_informations = [
-            ("db_version", db_version, self.master.APP_USER, self.master.APP_USER),
-            ("db_token", hashlib.md5(str(time.time()).encode()).hexdigest(), self.master.APP_USER, self.master.APP_USER),
+            ('db_version', db_version, self.master.APP_USER, self.master.APP_USER),
+            ('db_token', hashlib.md5(str(time.time()).encode()).hexdigest(), self.master.APP_USER, self.master.APP_USER),
         ]
 
         cur.executemany('''INSERT INTO db_informations (information, value, created_by, modified_by)

@@ -7,6 +7,7 @@ import socket
 
 from app_functions import connect_sqlite
 from create_new_db import createNewDb
+from db_settings import dbSettings
 
 
 class mainWindow(tk.Tk):
@@ -71,12 +72,11 @@ class mainWindow(tk.Tk):
             self.db_menu_control()
 
     def db_settings(self):
-        print("db_settings")
-        # print(self.con)
-        # cur = self.con.cursor()
-        # cur.execute('PRAGMA foreign_keys;')
-        # print(cur)
-        # print(cur.fetchall())
+        dialog_create_new_db = dbSettings(self, self.con)
+        dialog_create_new_db.grab_set()
+        self.dialog_control_block(True)
+        dialog_create_new_db.wait_window()
+        self.dialog_control_block(False)
 
     def db_close(self):
         self.con.close()

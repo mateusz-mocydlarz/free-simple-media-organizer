@@ -1,7 +1,5 @@
 import tkinter as tk
-from tkinter import filedialog
 from tkinter import ttk
-import os
 import sqlite3
 
 
@@ -13,52 +11,49 @@ class dbSettings(tk.Toplevel):
         con: connection to db
     """
 
+    db_settings_value = {'photo.thumbnail_max_side_length': '500',
+                         'photo.face_recognition': '1',
+                         'photo.face_recognition_level': '90',
+                         'video.thumbnail_max_side_length': '480',
+                         'video.face_recognition': '1',
+                         'video.face_recognition_precision': '30',
+                         'video.face_recognition_level': '90'}
+
     def __init__(self, master: tk.Tk, con: sqlite3.connect):
         super().__init__(master)
 
-        frm_new_db = tk.Frame(self)
-        frm_label = tk.Frame(frm_new_db)
-        frm_path = tk.Frame(frm_new_db)
-        frm_warning = tk.Frame(frm_new_db)
-        frm_next = tk.Frame(frm_new_db)
+        frm_db_settings = tk.Frame(self)
+        frm_db_settings.pack(fill="both", padx=10, pady=10, expand=True)
+        frm_grid_main = tk.Frame(frm_db_settings)
+        frm_grid_main.pack()
+        
+        frm_control = tk.Frame(frm_db_settings, pady=5)
+        btn_cancel = ttk.Button(frm_control, text="Cancel") #, command=self.destroy)
+        btn_create = ttk.Button(frm_control, text="Save")   #, command=self.create_db, state="disabled")
 
-        lbl_new_db = ttk.Label(frm_label, text="Select empy directory, to create new db:")
+        grid_row = 0
+        for setting in self.db_settings_value.keys():
+            frm_grid = tk.Frame(frm_grid_main)
+            frm_grid.grid(row=grid_row, column=0, padx=[0,5], sticky='e')
+            lbl_setting = ttk.Label(frm_grid, text=setting)
+            lbl_setting.pack()
 
-        self.entry_path_db = tk.StringVar()
-        self.entry_path_db.trace("w", self.check_path)
-        self.ent_path_db = ttk.Entry(frm_path, textvariable=self.entry_path_db)
-        btn_path_db = ttk.Button(frm_path, text="Select directory", command=self.select_dictionary)
+            frm_grid = tk.Frame(frm_grid_main)
+            frm_grid.grid(row=grid_row, column=1)
+            ent_setting = ttk.Entry(frm_grid)
+            ent_setting.insert(0, self.db_settings_value[setting])
+            ent_setting.pack()
 
-        self.lbl_warning = tk.Label(frm_warning, fg="red")
+            grid_row += 1
 
-        btn_cancel = ttk.Button(frm_next, text="Cancel", command=self.close_dialog)
-        self.btn_next = ttk.Button(frm_next, text="Next >", command=self.next_dialog, state="disabled")
-
-        frm_new_db.pack(fill="both", padx=10, pady=10, expand=True)
-
-        frm_label.pack(side="top", fill="x")
-        lbl_new_db.pack(side="left")
-
-        frm_path.pack(fill="both")
-        self.ent_path_db.pack(side="left", fill="x", expand=True)
-        btn_path_db.pack()
-
-        frm_warning.pack(fill="both")
-        self.lbl_warning.pack(side="left")
-
-        frm_next.pack(side="bottom", fill="both")
-        self.btn_next.pack(side="right", padx=2)
-        btn_cancel.pack(side="right", padx=2)
-
-        self.geometry("400x150")
-        self.resizable(False, False)
-
+        frm_control.pack(side='bottom', fill='both')
+        btn_create.pack(side='right', padx=2)
+        btn_cancel.pack(side='right', padx=2)
 
 
 if __name__ == "__main__":
-    root = tk.Tk()
-    root.APP_VERSION = "v01.001.001.00"
-    root.APP_START_POINT = os.path.dirname(__file__)
-    root.APP_USER = "host/user"
-    dialog = createNewDb(root)
-    dialog.mainloop()
+    from main_window import mainWindow
+    root = mainWindow()
+    root.con = sqlite3.connect('C:/Users/mateu/Qsync/Programming/tmp_free-simple-media-organizer/db/db.db')
+    root.db_settings()
+    root.mainloop()
