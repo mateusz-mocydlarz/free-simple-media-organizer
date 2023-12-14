@@ -1,8 +1,11 @@
+# -*- coding: utf-8 -*-
 import tkinter as tk
+from tkinter import filedialog
 import pathlib
 import getpass
 import socket
 
+from app_functions import connect_sqlite
 from create_new_db import createNewDb
 
 
@@ -22,14 +25,14 @@ class mainWindow(tk.Tk):
 
         self.menu_db = tk.Menu(self.menu_bar, tearoff=0)
         self.menu_db.add_command(label="New...", command=self.new_db)
-        self.menu_db.add_command(label="Open...")
+        self.menu_db.add_command(label="Open...", command=self.open_db)
 
         self.menu_open_last = tk.Menu(self.menu_db, tearoff=0)
         self.menu_db.add_cascade(label="Open last", menu=self.menu_open_last)
         self.menu_db.add_separator()
-        self.menu_db.add_command(label="Settings..", state="disabled", command=self.db_settings)
+        self.menu_db.add_command(label="Settings..", state='disabled', command=self.db_settings)
         self.menu_db.add_separator()
-        self.menu_db.add_command(label="Close", state="disabled", command=self.db_close)
+        self.menu_db.add_command(label="Close", state='disabled', command=self.db_close)
 
         self.menu_settings = tk.Menu(self.menu_bar, tearoff=0)
         self.menu_settings.add_command(label="Aplication...", command=self.app_settings)
@@ -50,13 +53,30 @@ class mainWindow(tk.Tk):
     def new_db(self):
         dialog_create_new_db = createNewDb(self)
         dialog_create_new_db.grab_set()
+        self.dialog_control_block(True)
         dialog_create_new_db.wait_window()
+        self.dialog_control_block(False)
 
         self.con = dialog_create_new_db.con
         self.db_menu_control()
 
+        if self.con:
+            self.db_settings()
+
+    def open_db(self):
+        direcotry_path = filedialog.askdirectory()
+        self.db_main_path = pathlib.Path(direcotry_path)
+        self.con = connect_sqlite(self.db_main_path.joinpath('db.db'))
+        if self.con:
+            self.db_menu_control()
+
     def db_settings(self):
         print("db_settings")
+        # print(self.con)
+        # cur = self.con.cursor()
+        # cur.execute('PRAGMA foreign_keys;')
+        # print(cur)
+        # print(cur.fetchall())
 
     def db_close(self):
         self.con.close()
@@ -65,17 +85,29 @@ class mainWindow(tk.Tk):
 
     def db_menu_control(self):
         if self.con:
-            self.menu_db.entryconfig("New...", state="disabled")
-            self.menu_db.entryconfig("Open...", state="disabled")
-            self.menu_db.entryconfig("Open last", state="disabled")
-            self.menu_db.entryconfig("Settings..", state="active")
-            self.menu_db.entryconfig("Close", state="active")
+            self.menu_db.entryconfig("New...", state='disabled')
+            self.menu_db.entryconfig("Open...", state='disabled')
+            self.menu_db.entryconfig("Open last", state='disabled')
+            self.menu_db.entryconfig("Settings..", state='active')
+            self.menu_db.entryconfig("Close", state='active')
         else:
-            self.menu_db.entryconfig("New...", state="active")
-            self.menu_db.entryconfig("Open...", state="active")
-            self.menu_db.entryconfig("Open last", state="active")
-            self.menu_db.entryconfig("Settings..", state="disabled")
-            self.menu_db.entryconfig("Close", state="disabled")
+            self.menu_db.entryconfig("New...", state='active')
+            self.menu_db.entryconfig("Open...", state='active')
+            self.menu_db.entryconfig("Open last", state='active')
+            self.menu_db.entryconfig("Settings..", state='disabled')
+            self.menu_db.entryconfig("Close", state='disabled')
+
+    def dialog_control_block(self, option: bool):
+        if option:
+            self.menu_bar.entryconfig("Database", state='disabled')
+            self.menu_bar.entryconfig("Settings", state='disabled')
+            self.menu_bar.entryconfig("Help", state='disabled')
+            self.withdraw()
+        else:
+            self.menu_bar.entryconfig("Database", state='active')
+            self.menu_bar.entryconfig("Settings", state='active')
+            self.menu_bar.entryconfig("Help", state='active')
+            self.deiconify()
 
     def app_settings(self):
         print("Settings")
