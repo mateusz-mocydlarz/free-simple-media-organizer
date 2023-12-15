@@ -13,10 +13,10 @@ from db_settings import dbSettings
 class mainWindow(tk.Tk):
     """App main window"""
 
-    APP_VERSION = "v01.001.001.00"
+    APP_VERSION = 'v01.001.001.00'
     # APP_START_POINT = os.path.dirname(__file__)
     APP_START_POINT = pathlib.Path(__file__).parent
-    APP_USER = f"{socket.gethostname()}/{getpass.getuser()}"
+    APP_USER = f'{socket.gethostname()}/{getpass.getuser()}'
 
     def __init__(self):
         super().__init__()

@@ -1,6 +1,5 @@
 -- version 001
 
-
 -- tables
 
 CREATE TABLE "db_informations" (
@@ -23,9 +22,9 @@ CREATE TABLE "db_settings" (
 	PRIMARY KEY("setting")
 );
 
-CREATE TABLE "directories" (
+CREATE TABLE "sources" (
 	"id"	        INTEGER NOT NULL UNIQUE,
-	"path"	        TEXT NOT NULL UNIQUE,
+	"source_path"	TEXT NOT NULL UNIQUE,
 	"created_by"	TEXT,
 	"created"	    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	"modified_by"	TEXT,
@@ -33,17 +32,29 @@ CREATE TABLE "directories" (
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
 
+CREATE TABLE "paths" (
+	"id"	        INTEGER NOT NULL UNIQUE,
+	"source_id"    	INTEGER NOT NULL,
+	"path"	        TEXT NOT NULL UNIQUE,
+	"created_by"	TEXT,
+	"created"	    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	"modified_by"	TEXT,
+	"modified"	    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	FOREIGN KEY("source_id") REFERENCES "sources"("id"),
+	PRIMARY KEY("id" AUTOINCREMENT)
+);
+
 CREATE TABLE "files" (
 	"id"	            INTEGER NOT NULL UNIQUE,
-	"directories_id"    INTEGER NOT NULL,
-	"path"	            TEXT NOT NULL,
+	"path_id"    		INTEGER NOT NULL,
 	"name"              TEXT NOT NULL,
+	"extension"         TEXT NOT NULL,
 	"size"              INT NOT NULL,
 	"created_by"	    TEXT,
 	"created"	        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	"modified_by"	    TEXT,
 	"modified"	        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	FOREIGN KEY("directories_id") REFERENCES "directories"("id"),
+	FOREIGN KEY("path_id") REFERENCES "paths"("id"),
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
 
@@ -62,9 +73,15 @@ BEGIN
 	WHERE setting = OLD.setting;
 END;
 
-CREATE TRIGGER upd_directories AFTER UPDATE ON directories
+CREATE TRIGGER upd_sources AFTER UPDATE ON sources
 BEGIN
-	UPDATE directories SET modified = CURRENT_TIMESTAMP
+	UPDATE sources SET modified = CURRENT_TIMESTAMP
+	WHERE id = OLD.id;
+END;
+
+CREATE TRIGGER upd_paths AFTER UPDATE ON paths
+BEGIN
+	UPDATE paths SET modified = CURRENT_TIMESTAMP
 	WHERE id = OLD.id;
 END;
 
