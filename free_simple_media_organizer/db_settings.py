@@ -12,41 +12,64 @@ class dbSettings(tk.Toplevel):
     """
 
     db_settings_value = {
+        'photo.thumbnail': {
+            'value': '1',
+            'description': "Generating thumbnails for photos",
+            'widget': ttk.Checkbutton
+        },
         'photo.thumbnail.max_side_length': {
+            'value': '500',
             'description': "The maximum side length of the thumbnail in pixels",
-            'value': '500'
-            },
+            'widget': ''
+        },
         'photo.thumbnail.quality': {
-            'description': "Thumbnail quality",
-            'value': '50'
-            },
+            'value': '50',
+            'description': "Thumbnail quality for photo",
+            'widget': ''
+        },
         'photo.face_recognition': {
+            'value': '1',
             'description': "Face recognition in photos",
-            'value': '1'
-            },
+            'widget': ttk.Checkbutton
+        },
         'photo.face_recognition.level': {
+            'value': '0.6',
             'description': "Face recognition level in photos",
-            'value': '90'
-            },
+            'widget': ''
+        },
+        'video.thumbnail': {
+            'value': '1',
+            'description': "Generating thumbnails for videos",
+            'widget': ttk.Checkbutton
+        },
         'video.thumbnail.max_resolution': {
+            'value': '480',
             'description': "Maximum video resolution",
-            'value': '480'
-            },
+            'widget': ttk.Combobox
+        },
+        'video.thumbnail.codec': {
+            'value': 'h.264',
+            'description': "Codec for thumbnails video",
+            'widget': ttk.Combobox
+        },
+        'video.thumbnail.quality': {
+            'value': '50',
+            'description': "Thumbnail quality for video",
+            'widget': ''
+        },
         'video.face_recognition': {
+            'value': '1',
             'description': "Face recognition in videos",
-            'value': '1'
-            },
-        'video.face_recognition_level': {
-            'description': "Face recognition level in photos",
-            'value': '90'
-            },
-        'video.face_recognition_precision': {
-            'description': "Maximum length of the photo side in pixels",
-            'value': '30'
-            }
-        }
+            'widget': ttk.Checkbutton
+        },
+        'video.face_recognition.level': {
+            'value': '0.6',
+            'description': "Face recognition level in videos",
+            'widget': ''
+        },
+    }
 
-    def __init__(self, master: tk.Tk, con: sqlite3.connect):
+    def __init__(self, master: tk.Tk, con):
         super().__init__(master)
 
         frm_main = tk.Frame(self)

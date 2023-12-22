@@ -25,10 +25,6 @@ CREATE TABLE "db_settings" (
 CREATE TABLE "sources" (
 	"id"	        INTEGER NOT NULL UNIQUE,
 	"source_path"	TEXT NOT NULL UNIQUE,
-	"created_by"	TEXT,
-	"created"	    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	"modified_by"	TEXT,
-	"modified"	    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
 
@@ -36,10 +32,6 @@ CREATE TABLE "paths" (
 	"id"	        INTEGER NOT NULL UNIQUE,
 	"source_id"    	INTEGER NOT NULL,
 	"path"	        TEXT NOT NULL UNIQUE,
-	"created_by"	TEXT,
-	"created"	    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	"modified_by"	TEXT,
-	"modified"	    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	FOREIGN KEY("source_id") REFERENCES "sources"("id"),
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
@@ -50,10 +42,6 @@ CREATE TABLE "files" (
 	"name"              TEXT NOT NULL,
 	"extension"         TEXT NOT NULL,
 	"size"              INT NOT NULL,
-	"created_by"	    TEXT,
-	"created"	        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	"modified_by"	    TEXT,
-	"modified"	        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	FOREIGN KEY("path_id") REFERENCES "paths"("id"),
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
@@ -71,22 +59,4 @@ CREATE TRIGGER upd_db_settings AFTER UPDATE ON db_settings
 BEGIN
 	UPDATE db_settings SET modified = CURRENT_TIMESTAMP
 	WHERE setting = OLD.setting;
-END;
-
-CREATE TRIGGER upd_sources AFTER UPDATE ON sources
-BEGIN
-	UPDATE sources SET modified = CURRENT_TIMESTAMP
-	WHERE id = OLD.id;
-END;
-
-CREATE TRIGGER upd_paths AFTER UPDATE ON paths
-BEGIN
-	UPDATE paths SET modified = CURRENT_TIMESTAMP
-	WHERE id = OLD.id;
-END;
-
-CREATE TRIGGER upd_files AFTER UPDATE ON files
-BEGIN
-	UPDATE files SET modified = CURRENT_TIMESTAMP
-	WHERE id = OLD.id;
 END;
