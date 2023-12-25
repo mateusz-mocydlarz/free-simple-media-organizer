@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 import pathlib
 import time
+from connect_sqlite import connect_sqlite
 
 
-def insert_media(con, source: pathlib.Path):
+def insert_media(db_file_path: pathlib.Path, source: pathlib.Path):
+    con = connect_sqlite(db_file_path)
     cur = con.cursor()
     cur.execute('''INSERT INTO sources (source_path)
                 VALUES (?)''', (source.as_posix(),))
@@ -39,17 +41,13 @@ def insert_media(con, source: pathlib.Path):
                     VALUES (?, ?, ?, ?)''', insert_data_files)
 
     con.commit()
+    con.close()
 
 
 if __name__ == "__main__":
     start = time.time()
-    from connect_sqlite import connect_sqlite
-    import getpass
-    import socket
-    con = connect_sqlite('C:/Users/mateu/Qsync/Programming/tmp_free-simple-media-organizer/db/db.db')
+    db_file_path = pathlib.Path('C:/Users/mateu/Qsync/Programming/tmp_free-simple-media-organizer/db_2/db.db')
     source = pathlib.Path('E:/')
-    APP_USER = f'{socket.gethostname()}/{getpass.getuser()}'
-    insert_media(con, source, APP_USER)
-    con.close()
+    insert_media(db_file_path, source)
     end = time.time()
     print(end - start)

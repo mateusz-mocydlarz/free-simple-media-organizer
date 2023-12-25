@@ -58,33 +58,34 @@ class mainWindow(tk.Tk):
         dialog_create_new_db.wait_window()
         self.dialog_control_block(False)
 
-        self.con = dialog_create_new_db.con
+        self.db_file_path = dialog_create_new_db.db_file_path
+        print(self.db_file_path)
         self.db_menu_control()
 
-        if self.con:
+        if self.db_file_path:
             self.db_settings()
 
     def open_db(self):
         direcotry_path = filedialog.askdirectory()
         self.db_main_path = pathlib.Path(direcotry_path)
-        self.con = connect_sqlite(self.db_main_path.joinpath('db.db'))
+        self.con = connect_sqlite(self.db_file_path)
         if self.con:
             self.db_menu_control()
 
     def db_settings(self):
-        dialog_create_new_db = dbSettings(self, self.con)
+        dialog_create_new_db = dbSettings(self, self.db_file_path)
         dialog_create_new_db.grab_set()
         self.dialog_control_block(True)
         dialog_create_new_db.wait_window()
         self.dialog_control_block(False)
 
     def db_close(self):
-        self.con.close()
-        self.con = False
+        self.db_file_path = None
+        self.db_file_path = False
         self.db_menu_control()
 
     def db_menu_control(self):
-        if self.con:
+        if self.db_file_path:
             self.menu_db.entryconfig("New...", state='disabled')
             self.menu_db.entryconfig("Open...", state='disabled')
             self.menu_db.entryconfig("Open last", state='disabled')

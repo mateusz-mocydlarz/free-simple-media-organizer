@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
-import sqlite3
+import pathlib
+
+from app_functions import connect_sqlite
 
 
 class dbSettings(tk.Toplevel):
@@ -69,7 +71,7 @@ class dbSettings(tk.Toplevel):
         },
     }
 
-    def __init__(self, master: tk.Tk, con):
+    def __init__(self, master: tk.Tk, db_file_path: pathlib.Path):
         super().__init__(master)
 
         frm_main = tk.Frame(self)
@@ -105,6 +107,6 @@ class dbSettings(tk.Toplevel):
 if __name__ == "__main__":
     from main_window import mainWindow
     root = mainWindow()
-    root.con = sqlite3.connect('C:/Users/mateu/Qsync/Programming/tmp_free-simple-media-organizer/db/db.db')
+    root.db_file_path = pathlib.Path('C:/Users/mateu/Qsync/Programming/tmp_free-simple-media-organizer/db/db.db')
     root.db_settings()
     root.mainloop()

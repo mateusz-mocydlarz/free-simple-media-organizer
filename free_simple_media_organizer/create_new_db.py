@@ -16,7 +16,7 @@ class createNewDb(tk.Toplevel):
         master: master window
     """
 
-    con = False
+    db_file_path = None
 
     def __init__(self, master: tk.Tk):
         super().__init__(master)
@@ -71,7 +71,8 @@ class createNewDb(tk.Toplevel):
 
         # create db
         db_version = self.master.APP_VERSION.split(".")[1]
-        self.con = connect_sqlite(self.db_main_path.joinpath('db.db'))
+        self.db_file_path = self.db_main_path.joinpath('db.db')
+        self.con = connect_sqlite(self.db_file_path)
         cur = self.con.cursor()
 
         with open(pathlib.Path(self.master.APP_START_POINT).joinpath('db/install').joinpath(f'{db_version}.sql'), 'r') as script_new_db:
@@ -92,6 +93,7 @@ class createNewDb(tk.Toplevel):
         # cur.executemany('''INSERT INTO db_settings (setting, value, created_by, modified_by)
         #                 VALUES (?, ?, ?, ?)''', init_data_settings)
         self.con.commit()
+        self.con.close()
 
         self.destroy()
 
