@@ -64,8 +64,10 @@ class createNewDb(tk.Toplevel):
         self.db_main_path.mkdir(parents=True, exist_ok=True)
 
         # create directories
-        db_directories = ['thumbnails',
-                          'faces',]
+        db_directories = [
+            'thumbnails',
+            'faces'
+        ]
         for d in db_directories:
             self.db_main_path.joinpath(d).mkdir(parents=True, exist_ok=True)
 

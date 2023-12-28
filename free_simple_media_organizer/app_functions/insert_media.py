@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import pathlib
 import time
-from connect_sqlite import connect_sqlite
+from free_simple_media_organizer.app_functions import connect_sqlite
 
 
 def insert_media(db_file_path: pathlib.Path, source: pathlib.Path):
