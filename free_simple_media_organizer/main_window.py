@@ -17,7 +17,6 @@ class mainWindow(tk.Tk):
         super().__init__()
 
         self.APP_VERSION = 'v01.001.001.00'
-        # APP_START_POINT = os.path.dirname(__file__)
         self.APP_START_POINT = pathlib.Path(__file__).parent
         self.APP_USER = f'{socket.gethostname()}/{getpass.getuser()}'
 
@@ -60,7 +59,6 @@ class mainWindow(tk.Tk):
         self.dialog_control_block(False)
 
         self.db_file_path = dialog_create_new_db.db_file_path
-        print(self.db_file_path)
         self.db_menu_control()
 
         if self.db_file_path:
@@ -81,8 +79,7 @@ class mainWindow(tk.Tk):
         self.dialog_control_block(False)
 
     def db_close(self):
-        self.db_file_path = None
-        self.db_file_path = False
+        self.db_file_path = pathlib.Path()
         self.db_menu_control()
 
     def db_menu_control(self):

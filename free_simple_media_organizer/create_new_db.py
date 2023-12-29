@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from os import path
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import ttk
@@ -10,16 +11,11 @@ from app_functions import connect_sqlite
 
 
 class createNewDb(tk.Toplevel):
-    """Create new database
-
-    Args:
-        master: master window
-    """
-
-    db_file_path = None
 
     def __init__(self, master: tk.Tk):
         super().__init__(master)
+        
+        db_file_path = pathlib.Path()
 
         frm_new_db = tk.Frame(self)
         frm_new_db.pack(fill="both", padx=10, pady=10, expand=True)
@@ -32,7 +28,7 @@ class createNewDb(tk.Toplevel):
         lbl_new_db = ttk.Label(frm_label, text="Select empy directory, to create new db:")
 
         self.entry_path_db = tk.StringVar()
-        self.entry_path_db.trace('w', self.check_path)
+        self.entry_path_db.trace_add('write', self.check_path)  # Fix: Replace trace() with trace_add()
         self.ent_path_db = ttk.Entry(frm_path, textvariable=self.entry_path_db)
         btn_path_db = ttk.Button(frm_path, text="Select directory", command=self.select_directory)
 
@@ -105,7 +101,11 @@ class createNewDb(tk.Toplevel):
         self.ent_path_db.insert(0, direcotry_path)
 
     def check_path(self, *args):
-        """Validate path to directory and set variable"""
+        """
+        Validate path to directory and set variable
+
+        *args - tkinter trace
+        """
 
         self.db_main_path = pathlib.Path(self.entry_path_db.get())
         self.set_warning_information("")
